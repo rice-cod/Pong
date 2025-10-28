@@ -41,9 +41,13 @@ const ball = {
   speedY:1,
   initialX:canvas.width / 2,
   initialY:canvas.height / 2, 
-  initialSpeedX:1,
-  initialSpeedY:1,
-  color: "rgba(216, 203, 22, 1)"
+  initialSpeedX:2,
+  initialSpeedY:2,
+  color: "rgba(216, 203, 22, 1)",
+  acceleration: {
+    x: 0.5,
+    y: 0.5
+  },
 };
 
 const net = {
@@ -63,13 +67,32 @@ const keysPressed = {
 
 const scores = {
   player1: 0,
-  player2: 0
+  player2: 0,
+  winning: 5
 };
 
+let resettimeout = null;
 
 let isGamePaused = false;
 
+function startResetTimeout() {
+  resettimeout = setTimeout(() => {
+      isGamePaused = false;
+      resetgame();
+    }, 3000);
+}
 
+
+function checkandDysplayWinner() {
+  if (scores.player1 >= scores.winning) {
+    isGamePaused = true;
+    alert("Player 1 Wins!");
+  }
+  else if (scores.player2 >= scores.winning) {
+    isGamePaused = true;
+    alert("Player 2 Wins!");
+  }
+}
 
 function updateScores() {
   const player1ScoreElement = document.getElementById("player1Score");
@@ -95,45 +118,55 @@ function updatePlayers() {
     player2.y += playerspeed;
   }
 }
+function increaseBallSpeed() {
+   if (ball.speedX > 0) {
+    ball.speedX += ball.acceleration.x ;
+  }
+  else {
+    ball.speedX -= ball.acceleration.x  ;
+  }
+  if (ball.speedY > 0) {
+    ball.speedY += ball.acceleration.y ;
+  }
+  else {
+    ball.speedY -= ball.acceleration.y ;
+  }
+}
 
 function updateBall() {
-  ball.x += ball.speedX + 0.1;
-  ball.y += ball.speedY + 0.1;
+  ball.x += ball.speedX;
+  ball.y += ball.speedY;
 
   if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
     ball.speedY = -ball.speedY;
-  }
+  }//bounce off top and bottom walls
 
   if (ball.x - ball.radius < player1.x + player1.width && 
-      ball.y > player1.y && 
+      ball.y + ball.radius> player1.y && 
       ball.y < player1.y + player1.height) {
+    increaseBallSpeed();
     ball.speedX = -ball.speedX;
-  }
+  }//bounce off player1 paddle
 
   if (ball.x + ball.radius > player2.x && 
-      ball.y > player2.y && 
+      ball.y + ball.radius > player2.y && 
       ball.y < player2.y + player2.height) {
+    increaseBallSpeed();
     ball.speedX = -ball.speedX;
-  }
+  }//bounce off player2 paddle
 
   if (ball.x - ball.radius < 0 && isGamePaused === false) {
     scores.player2 += 1;
     updateScores();
     isGamePaused = true;
-    setTimeout(() => {
-      isGamePaused = false;
-      resetgame();
-    }, 3000);
+    startResetTimeout();
   }
 
   if (ball.x + ball.radius > canvas.width && isGamePaused === false) {
     scores.player1 += 1;
     updateScores();
     isGamePaused = true;
-    setTimeout(() => {
-      isGamePaused = false;
-      resetgame();
-    }, 3000);
+    startResetTimeout();
   }
  
 }
@@ -216,20 +249,34 @@ function resetgame() {
   ball.speedY = ball.initialSpeedY;
   player1.y = player1.initialY;
   player2.y = player2.initialY;
+
+}
+
+function restart() {
+  if (resettimeout !== null) {
+    clearTimeout(resettimeout);
+    resettimeout = null;
+  }
+  scores.player1 = 0;
+  scores.player2 = 0;
+  updateScores();
+  resetgame();
+  isGamePaused = false;
 }
 
 const resetButton = document.getElementById("gameResetButton");
-resetButton.addEventListener("click", resetgame);
+resetButton.addEventListener("click", restart);
 
 
 function animate (timestamp) {
   if (!isGamePaused) {
       update();
+      checkandDysplayWinner();
       draw();
     }
-
+  console.log(isGamePaused);
   requestAnimationFrame(animate);
-  console.log(timestamp);
+  //console.log(timestamp);
 }
 
 updateScores();
