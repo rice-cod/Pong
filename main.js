@@ -269,6 +269,11 @@ function restart() {
 const resetButton = document.getElementById("gameResetButton");
 resetButton.addEventListener("click", restart);
 
+const pauseButton = document.getElementById("gamePauseButton");
+pauseButton.addEventListener("click", function() {
+  isGamePaused = !isGamePaused;
+});
+
 
 function animate (timestamp) {
   if (!isGamePaused) {
