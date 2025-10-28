@@ -22,3 +22,12 @@ body {
     font-family: Arial, sans-serif;
     gap: 40px;
 }
+
+#header {
+    display: flex;
+    gap: 30px
+}
+
+#header > * {
+    flex-basis: 350px;
+}
