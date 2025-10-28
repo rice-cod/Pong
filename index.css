@@ -1,7 +1,22 @@
 body {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    
+    height: calc(100vh - 20px);
+}
+
+#scoreboard {
+    position: absolute;
+    top: 500px;
+    bottom: 500px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    color: white;
+    font-family: Arial, sans-serif;
+    gap: 40px;
 }
