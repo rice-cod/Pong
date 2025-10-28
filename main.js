@@ -68,7 +68,7 @@ const keysPressed = {
 const scores = {
   player1: 0,
   player2: 0,
-  winning: 5
+  winning: 11
 };
 
 let resettimeout = null;
