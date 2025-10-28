@@ -1,6 +1,8 @@
 console.log("Pong game initialized");
 
 const canvas = document.getElementById("pongCanvas");
+canvas.width = window.innerWidth * 0.7;
+canvas.height = window.innerHeight * 0.7;
 
 const player1color = "rgba(231, 19, 19, 1)";
 const player2color = "rgba(60, 20, 218, 1)";
@@ -148,7 +150,7 @@ function updateBall() {
     ball.speedX = -ball.speedX;
   }//bounce off player1 paddle
 
-  if (ball.x + ball.radius > player2.x && 
+  if (ball.x + ball.radius > player2.x - player2.width && 
       ball.y + ball.radius > player2.y && 
       ball.y < player2.y + player2.height) {
     increaseBallSpeed();
