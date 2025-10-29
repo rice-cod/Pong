@@ -47,6 +47,8 @@ const ball = {
   },
 };
 
+let isGoingRight = true;
+
 const backgroundMusic = document.getElementById('backgroundMusic');
 backgroundMusic.volume = 0.3;
 
@@ -154,6 +156,10 @@ function toggleBackgroundMusic() {
     }
 }
 
+function randomDirection() {
+    return Math.random() < 0.5 ? -1 : 1;
+}
+
 
 function updateBall() {
   ball.x += ball.speedX;
@@ -162,22 +168,37 @@ function updateBall() {
   if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
     ball.speedY = -ball.speedY;
   }//bounce off top and bottom walls
-
-  if (ball.x - ball.radius < player1.x + player1.width && 
-      ball.y + ball.radius> player1.y && 
-      ball.y < player1.y + player1.height) {
+    if (ball.x - ball.radius < player1.x + player1.width && 
+      ball.x + ball.radius > player1.x &&
+      ball.y + ball.radius > player1.y && 
+      ball.y - ball.radius < player1.y + player1.height) {
+    
+    const hitLocation = (ball.y - (player1.y + player1.height/2)) / (player1.height/2);
+    ball.speedX = Math.abs(ball.speedX); 
+    ball.speedY = ball.speedY + (hitLocation * 2); 
     increaseBallSpeed();
-    ball.speedX = -ball.speedX;
     playPaddleHitSound();
-  }//bounce off player1 paddle
+    ball.x = player1.x + player1.width + ball.radius; 
+  }
 
-  if (ball.x + ball.radius > player2.x - player2.width && 
+    
+
+    if (ball.x + ball.radius > player2.x && 
+      ball.x - ball.radius < player2.x + player2.width &&
       ball.y + ball.radius > player2.y && 
-      ball.y < player2.y + player2.height) {
+      ball.y - ball.radius < player2.y + player2.height) {
+    
+
+    const hitLocation = (ball.y - (player2.y + player2.height/2)) / (player2.height/2);
+    
+    
+    ball.speedX = -Math.abs(ball.speedX); 
+    ball.speedY = ball.speedY + (hitLocation * 2); 
+    
     increaseBallSpeed();
-    ball.speedX = -ball.speedX;
     playPaddleHitSound();
-  }//bounce off player2 paddle
+    ball.x = player2.x - ball.radius; 
+  }
 
   if (ball.x - ball.radius < 0 && isGamePaused === false) {
     scores.player2 += 1;
@@ -233,9 +254,9 @@ function draw() {
 
 function playPaddleHitSound() {
     const sound = document.getElementById('paddleHitSound');
-    console.log("Playing paddle hit sound"); // Debug log
+    console.log("Playing paddle hit sound"); 
     sound.currentTime = 0;
-    sound.volume = 1.0; // Make sure volume is up
+    sound.volume = 1.0; 
     sound.play().catch(error => {
         console.error("Error playing sound:", error);
     });
@@ -279,13 +300,13 @@ document.addEventListener("keyup", function(event) {
 });
 
 function resetgame() {
-  ball.x =  ball.initialX;
+  ball.x = ball.initialX;
   ball.y = ball.initialY;
-  ball.speedX = ball.initialSpeedX; 
-  ball.speedY = ball.initialSpeedY;
+  ball.speedX = ball.initialSpeedX * (isGoingRight ? 1 : -1);
+  ball.speedY = ball.initialSpeedY * randomDirection();
   player1.y = player1.initialY;
   player2.y = player2.initialY;
-
+  isGoingRight = !isGoingRight; 
 }
 
 function restart() {
@@ -306,17 +327,20 @@ resetButton.addEventListener("click", restart);
 const pauseButton = document.getElementById("gamePauseButton");
 pauseButton.addEventListener("click", function() {
   isGamePaused = !isGamePaused;
-});
-
-pauseButton.addEventListener("click", function() {
-    isGamePaused = !isGamePaused;
-    pauseButton.textContent = isGamePaused ? "Resume Game" : "Pause Game";
+  pauseButton.textContent = isGamePaused ? "Resume Game" : "Pause Game";
     if (isGamePaused) {
         backgroundMusic.pause();
     } else {
-        backgroundMusic.play();
+        backgroundMusic.play().catch(error => {
+            console.log("Music playback failed:", error);
+        });
     }
+    
+    console.log("Game paused:", isGamePaused); 
 });
+
+
+
 
 
 function animate (timestamp) {
