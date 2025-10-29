@@ -7,8 +7,9 @@
     <title>Pong</title>
     <link rel="icon" href="./images/R.png">
     <link rel="stylesheet" href="index.css">
-    
-    
+    <audio id="backgroundMusic" loop>
+        <source src="background-music.mp3" type="audio/mp3">
+    </audio>
 </head>
 
 
@@ -21,14 +22,16 @@
         <p>Player 1: W = up, S = down</p>
         <button id="gameResetButton">Reset Game</button>
         <button id="gamePauseButton">Pause Game</button>
-        <p>Player 2: Up Arrow = up, Down Arrow = down</p>
+        <button id="musicToggleButton">Toggle Music</button>
+        <p>Player 2: Up Arrow = up, Arrow Down = down</p>
     </div>
     
     <canvas id="pongCanvas" style="border:1px solid #87561b;"></canvas>
     <script src="main.js"></script>
     <body style="background-color: rgb(39, 37, 37);">
+        
     
     
 </body>
-
+<audio id="paddleHitSound" src="paddle-hit.mp3" preload="auto"></audio>
 </html>

@@ -4,11 +4,6 @@ const canvas = document.getElementById("pongCanvas");
 canvas.width = window.innerWidth * 0.7;
 canvas.height = window.innerHeight * 0.7;
 
-const player1color = "rgba(231, 19, 19, 1)";
-const player2color = "rgba(60, 20, 218, 1)";
-const ballcolor = "rgba(216, 203, 22, 1)";
-const netcolor = "rgba(252, 252, 252, 1)";
-
 
 const playerspeed = 6;
 const player1 = {
@@ -39,8 +34,8 @@ const ball = {
   x:400,
   y:200,
   radius:10,
-  speedX:1,
-  speedY:1,
+  speedX:2,
+  speedY:2,
   initialX:canvas.width / 2,
   initialY:canvas.height / 2, 
   initialSpeedX:2,
@@ -51,6 +46,9 @@ const ball = {
     y: 0.5
   },
 };
+
+const backgroundMusic = document.getElementById('backgroundMusic');
+backgroundMusic.volume = 0.3;
 
 const net = {
   x:canvas.width / 2 - 5,
@@ -83,6 +81,13 @@ function startResetTimeout() {
       resetgame();
     }, 3000);
 }
+
+document.addEventListener('click', function() {
+    startBackgroundMusic();
+}, { once: true });
+
+const musicToggleButton = document.getElementById("musicToggleButton");
+musicToggleButton.addEventListener("click", toggleBackgroundMusic);
 
 
 function checkandDysplayWinner() {
@@ -135,6 +140,21 @@ function increaseBallSpeed() {
   }
 }
 
+function startBackgroundMusic() {
+    backgroundMusic.play().catch(error => {
+        console.log("Music playback failed:", error);
+    });
+}
+
+function toggleBackgroundMusic() {
+    if (backgroundMusic.paused) {
+        backgroundMusic.play();
+    } else {
+        backgroundMusic.pause();
+    }
+}
+
+
 function updateBall() {
   ball.x += ball.speedX;
   ball.y += ball.speedY;
@@ -148,6 +168,7 @@ function updateBall() {
       ball.y < player1.y + player1.height) {
     increaseBallSpeed();
     ball.speedX = -ball.speedX;
+    playPaddleHitSound();
   }//bounce off player1 paddle
 
   if (ball.x + ball.radius > player2.x - player2.width && 
@@ -155,6 +176,7 @@ function updateBall() {
       ball.y < player2.y + player2.height) {
     increaseBallSpeed();
     ball.speedX = -ball.speedX;
+    playPaddleHitSound();
   }//bounce off player2 paddle
 
   if (ball.x - ball.radius < 0 && isGamePaused === false) {
@@ -172,6 +194,8 @@ function updateBall() {
   }
  
 }
+
+
 
 function update() {
   updateBall();
@@ -205,6 +229,16 @@ function draw() {
   drawPlayer(player2);
   drawNet();
   drawBall()
+}
+
+function playPaddleHitSound() {
+    const sound = document.getElementById('paddleHitSound');
+    console.log("Playing paddle hit sound"); // Debug log
+    sound.currentTime = 0;
+    sound.volume = 1.0; // Make sure volume is up
+    sound.play().catch(error => {
+        console.error("Error playing sound:", error);
+    });
 }
 
 
@@ -272,6 +306,16 @@ resetButton.addEventListener("click", restart);
 const pauseButton = document.getElementById("gamePauseButton");
 pauseButton.addEventListener("click", function() {
   isGamePaused = !isGamePaused;
+});
+
+pauseButton.addEventListener("click", function() {
+    isGamePaused = !isGamePaused;
+    pauseButton.textContent = isGamePaused ? "Resume Game" : "Pause Game";
+    if (isGamePaused) {
+        backgroundMusic.pause();
+    } else {
+        backgroundMusic.play();
+    }
 });
 
 
