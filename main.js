@@ -78,10 +78,17 @@ let resettimeout = null;
 let isGamePaused = false;
 
 function startResetTimeout() {
+  if (resettimeout !== null) {
+    clearTimeout(resettimeout);
+  }
+
   resettimeout = setTimeout(() => {
-      isGamePaused = false;
-      resetgame();
-    }, 3000);
+    resettimeout = null;                
+    isGamePaused = false;
+    const pauseButton = document.getElementById("gamePauseButton");
+    if (pauseButton) pauseButton.textContent = "Pause Game";
+    resetgame();
+  }, 3000);
 }
 
 document.addEventListener('click', function() {
@@ -319,6 +326,8 @@ function restart() {
   updateScores();
   resetgame();
   isGamePaused = false;
+  const pauseButtonEl = document.getElementById("gamePauseButton");
+  if (pauseButtonEl) pauseButtonEl.textContent = "Pause Game";
 }
 
 const resetButton = document.getElementById("gameResetButton");
@@ -326,6 +335,7 @@ resetButton.addEventListener("click", restart);
 
 const pauseButton = document.getElementById("gamePauseButton");
 pauseButton.addEventListener("click", function() {
+  if (resettimeout !== null) return;
   isGamePaused = !isGamePaused;
   pauseButton.textContent = isGamePaused ? "Resume Game" : "Pause Game";
     if (isGamePaused) {
